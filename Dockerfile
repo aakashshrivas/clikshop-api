@@ -1,3 +1,4 @@
+# Use official PHP 8.2 FPM image
 FROM php:8.2-fpm
 
 # Install system dependencies
@@ -12,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd exif pdo_mysql bcmath mbstring xml
+    && docker-php-ext-install gd exif pdo_mysql bcmath mbstring xml zip opcache
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -20,20 +21,23 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files
+# Copy composer files first for caching
 COPY composer.json composer.lock ./
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy app
+# Copy application files
 COPY . .
 
-# Storage link
+# Create storage link
 RUN php artisan storage:link
 
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Start Laravel
+# Expose port
+EXPOSE 8080
+
+# Run Laravel server
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]

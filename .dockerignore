@@ -1,6 +1,10 @@
 node_modules
 vendor
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
 storage/logs
+storage/app/public/uploads
 .env
 .git
 .gitignore
