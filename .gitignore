@@ -4,7 +4,6 @@ bootstrap/cache/*
 
 # Composer & Vendor
 /vendor
-composer.lock
 
 # Node modules
 /node_modules
