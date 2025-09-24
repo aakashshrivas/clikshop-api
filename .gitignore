@@ -1,0 +1,58 @@
+# Laravel bootstrap cache (keep config.php, routes.php if auto-generated)
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Composer & Vendor
+/vendor
+/composer.lock
+
+# Node modules
+/node_modules
+
+# Laravel storage (except .gitignore placeholders)
+/storage/*
+!/storage/app/public
+!/storage/framework/cache/data
+!/storage/framework/sessions
+!/storage/framework/testing
+!/storage/framework/views
+!/storage/logs
+!/storage/*.gitignore
+
+# Public uploads & build
+/public/storage
+/public/hot
+/public/build
+/public/upload
+
+# Environment & config
+.env
+.env.*
+!.env.example
+.env.backup
+/storage/*.key
+
+# PHPUnit
+.phpunit.result.cache
+
+# IDE & dev files
+/.idea
+/.vscode
+/.history
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Homestead / Vagrant
+Homestead.json
+Homestead.yaml
+
+# Misc
+auth.json
+installation.json
+stubs
+/storage/dotenv-editor
+fzip.li.dic
+_log.dic.xml
+.migration
