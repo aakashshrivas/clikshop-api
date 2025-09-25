@@ -22,14 +22,15 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first for caching
+# Copy composer files first (for caching)
 COPY composer.json composer.lock ./
+
+# Copy the rest of the application (including app/Helpers)
+COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy application files
-COPY . .
 
 # Create storage link
 RUN php artisan storage:link
