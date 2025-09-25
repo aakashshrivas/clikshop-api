@@ -22,15 +22,19 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy everything (app, config, etc.)
-COPY . .
-
-# Ensure storage and cache directories exist
-RUN mkdir -p storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+# Copy composer files first for caching
+COPY composer.json composer.lock ./
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
+
+# Copy the rest of the application
+COPY . .
+
+# Ensure storage and cache directories exist
+RUN mkdir -p storage/framework/{cache,sessions,testing,views} bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 # Expose port
 EXPOSE 8080
