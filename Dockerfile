@@ -39,7 +39,8 @@ RUN php artisan storage:link
 RUN chmod -R 775 storage bootstrap/cache
 
 # Expose port
+# Expose port
 EXPOSE 8080
 
-# Run Laravel server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# Run Laravel server and create storage link at runtime
+CMD ["sh", "-c", "php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080"]
