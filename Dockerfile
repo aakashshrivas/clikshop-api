@@ -31,10 +31,6 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-
-# Create storage link
-RUN php artisan storage:link
-
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
 
