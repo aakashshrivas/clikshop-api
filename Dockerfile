@@ -25,6 +25,9 @@ WORKDIR /var/www/html
 # Copy composer files first for caching
 COPY composer.json composer.lock ./
 
+# Copy any files needed for autoload 'files' section
+COPY app/Helpers ./app/Helpers
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
