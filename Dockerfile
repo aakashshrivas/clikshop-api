@@ -47,5 +47,12 @@ RUN mkdir -p \
 # Expose port
 EXPOSE 8080
 
-# Run Laravel server and create storage link at runtime
-CMD ["sh", "-c", "if [ -z \"$APP_KEY\" ]; then php artisan key:generate; fi && php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php-fpm"]
+# Run Laravel server and import DB at runtime
+CMD ["sh", "-c", "\
+    if [ -z \"$APP_KEY\" ]; then php artisan key:generate; fi && \
+    php artisan storage:link && \
+    if [ -f /var/www/html/db.sql ]; then \
+        mysql -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQLDATABASE < /var/www/html/db.sql; \
+    fi && \
+    php artisan serve --host=0.0.0.0 --port=8080 \
+"]
