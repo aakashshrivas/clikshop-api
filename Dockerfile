@@ -48,4 +48,4 @@ RUN mkdir -p \
 EXPOSE 8080
 
 # Run Laravel server and create storage link at runtime
-CMD ["sh", "-c", "php artisan storage:link && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=8080"]
+CMD ["sh", "-c", "if [ -z \"$APP_KEY\" ]; then php artisan key:generate; fi && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080"]
