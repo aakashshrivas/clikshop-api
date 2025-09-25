@@ -25,7 +25,7 @@ WORKDIR /var/www/html
 # Copy composer files first for caching
 COPY composer.json composer.lock ./
 
-# Copy any files needed for autoload 'files' section
+# Copy Helpers.php early (needed by autoload)
 COPY app/Helpers ./app/Helpers
 
 # Install PHP dependencies
@@ -34,8 +34,13 @@ RUN composer install --no-dev --optimize-autoloader
 # Copy the rest of the application
 COPY . .
 
-# Ensure storage and cache directories exist
-RUN mkdir -p storage/framework/{cache,sessions,testing,views} bootstrap/cache \
+# Ensure storage and cache directories exist & set permissions
+RUN mkdir -p \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/testing \
+    bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
@@ -43,4 +48,4 @@ RUN mkdir -p storage/framework/{cache,sessions,testing,views} bootstrap/cache \
 EXPOSE 8080
 
 # Run Laravel server and create storage link at runtime
-CMD ["sh", "-c", "php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080"]
+CMD ["sh", "-c", "php artisan storage:link && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=8080"]
