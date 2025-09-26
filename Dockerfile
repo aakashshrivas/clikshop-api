@@ -39,8 +39,14 @@ EXPOSE 8080
 
 # Run Laravel setup + DB import + migrate + seed + cache optimization
 CMD ["sh", "-c", "\
+    # Generate APP_KEY if not exists
     if [ -z \"$APP_KEY\" ]; then php artisan key:generate; fi && \
+    # Ensure storage and cache directories exist
+    mkdir -p storage/framework/{cache,sessions,testing,views} bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache && \
     php artisan storage:link && \
+    # Import DB only once
     if [ -f /var/www/html/db.sql ] && [ ! -f /var/www/html/.db_imported ]; then \
         echo '📥 Dropping and importing database...'; \
         mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD -e \"DROP DATABASE IF EXISTS $MYSQLDATABASE; CREATE DATABASE $MYSQLDATABASE;\"; \
@@ -50,7 +56,7 @@ CMD ["sh", "-c", "\
     else \
         echo '⏭️ Skipping DB import (already done or file missing).'; \
     fi && \
-    echo '⚡ Optimizing Laravel caches...' && \
+    echo '⚡ Clearing and optimizing caches...' && \
     php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear && \
     php artisan config:cache && php artisan route:cache && php artisan view:cache && \
     echo '🎉 Laravel app ready!' && \
