@@ -19,6 +19,9 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
+# Make startup script executable inside image (important for Windows hosts)
+RUN chmod +x docker/startup.sh
+
 # Install PHP dependencies (optimize for prod)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
