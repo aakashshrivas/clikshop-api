@@ -6,15 +6,18 @@ RUN apt-get update && apt-get install -y \
     libonig-dev libxml2-dev libzip-dev \
     zip unzip git curl default-mysql-client \
     supervisor \
+    && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd exif pdo_mysql bcmath mbstring xml zip opcache
-
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www/html
 
 COPY . .
+
+# Copy supervisord config
+COPY ./docker/supervisord.conf /etc/supervisord.conf
 
 # Make startup.sh executable
 RUN chmod +x docker/startup.sh
