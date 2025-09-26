@@ -39,28 +39,39 @@ EXPOSE 8080
 
 # Run Laravel setup + DB import + migrate + seed + cache optimization
 CMD ["sh", "-c", "\
+    # Generate APP_KEY if missing
     if [ -z \"$APP_KEY\" ]; then php artisan key:generate; fi && \
+
+    # Create storage link
     php artisan storage:link && \
+
+    # Import db.sql only once
     if [ -f /var/www/html/db.sql ] && [ ! -f /var/www/html/.db_imported ]; then \
         echo '📥 Importing database from db.sql...'; \
-        mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQLDATABASE < /var/www/html/db.sql && \
+        mysql --ssl-mode=DISABLED -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQLDATABASE < /var/www/html/db.sql && \
         touch /var/www/html/.db_imported; \
         echo '✅ Database import completed.'; \
     else \
         echo '⏭️ Skipping DB import (already done or file missing).'; \
     fi && \
+
+    # Run migrations every time
+    echo '🚀 Running migrations...' && php artisan migrate --force && \
+
+    # Run seeders (optional: only first time)
     if [ ! -f /var/www/html/.db_seeded ]; then \
         echo '🌱 Running seeders...'; \
-        php artisan db:seed --force && \
-        touch /var/www/html/.db_seeded; \
+        php artisan db:seed --force && touch /var/www/html/.db_seeded; \
         echo '✅ Database seeding completed.'; \
     else \
         echo '⏭️ Skipping seeders (already done).'; \
     fi && \
-    echo '🚀 Running migrations...' && php artisan migrate --force && \
+
+    # Optimize caches
     echo '⚡ Optimizing Laravel caches...' && \
     php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear && \
     php artisan config:cache && php artisan route:cache && php artisan view:cache && \
+
     echo '🎉 Laravel app ready!' && \
     php artisan serve --host=0.0.0.0 --port=8080 \
 "]
