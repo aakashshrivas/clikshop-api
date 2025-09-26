@@ -37,23 +37,16 @@ RUN composer install --no-dev --optimize-autoloader
 # Expose port
 EXPOSE 8080
 
-# Run Laravel setup + DB import only first time + migrations + seed
+# Run Laravel setup and start server
 CMD ["sh", "-c", "\
-    # Generate APP_KEY if not exists
+    # Generate APP_KEY if not set
     if [ -z \"$APP_KEY\" ]; then php artisan key:generate; fi && \
-    # Ensure storage directories
+    # Ensure storage and cache directories
     mkdir -p storage/framework/{cache,sessions,testing,views} bootstrap/cache && \
     chown -R www-data:www-data storage bootstrap/cache && chmod -R 775 storage bootstrap/cache && \
+    # Ensure symlink exists
     php artisan storage:link && \
-    # Import DB only once
-    if [ -f /var/www/html/db.sql ] && [ ! -f /var/www/html/.db_imported ]; then \
-        echo '📥 Importing database from db.sql...'; \
-        mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQLDATABASE < /var/www/html/db.sql; \
-        touch /var/www/html/.db_imported; \
-        echo '✅ Database import completed.'; \
-    else \
-        echo '⏭️ Skipping DB import (already done or file missing).'; \
-    fi && \
     echo '🎉 Laravel app ready!' && \
-    php artisan serve --host=0.0.0.0 --port=8080 \
+    # Start PHP server with public as document root
+    php -S 0.0.0.0:8080 -t public \
 "]
