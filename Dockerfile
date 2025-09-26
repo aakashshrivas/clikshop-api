@@ -41,16 +41,15 @@ EXPOSE 8080
 CMD ["sh", "-c", "\
     if [ -z \"$APP_KEY\" ]; then php artisan key:generate; fi && \
     php artisan storage:link && \
-    if [ -f /var/www/html/db.sql ]; then \
+    if [ -f /var/www/html/db.sql ] && [ ! -f /var/www/html/.db_imported ]; then \
         echo '📥 Dropping and importing database...'; \
         mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD -e \"DROP DATABASE IF EXISTS $MYSQLDATABASE; CREATE DATABASE $MYSQLDATABASE;\"; \
         mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQLDATABASE < /var/www/html/db.sql; \
+        touch /var/www/html/.db_imported; \
         echo '✅ Database import completed.'; \
     else \
-        echo '⏭️ Skipping DB import (db.sql not found).'; \
+        echo '⏭️ Skipping DB import (already done or file missing).'; \
     fi && \
-    echo '🚀 Running migrations...' && php artisan migrate --force && \
-    echo '🌱 Running seeders...' && php artisan db:seed --force && \
     echo '⚡ Optimizing Laravel caches...' && \
     php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear && \
     php artisan config:cache && php artisan route:cache && php artisan view:cache && \
