@@ -48,7 +48,7 @@ CMD ["sh", "-c", "\
     # Import db.sql only once
     if [ -f /var/www/html/db.sql ] && [ ! -f /var/www/html/.db_imported ]; then \
         echo '📥 Importing database from db.sql...'; \
-        mysql --ssl-mode=DISABLED -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQLDATABASE < /var/www/html/db.sql && \
+        mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQLDATABASE < /var/www/html/db.sql && \
         touch /var/www/html/.db_imported; \
         echo '✅ Database import completed.'; \
     else \
