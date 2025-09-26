@@ -26,6 +26,9 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
+# Copy seed images into storage/public
+COPY storage_seed/ /var/www/html/storage/app/public/
+
 # Ensure storage and cache directories exist
 RUN mkdir -p storage/framework/{cache,sessions,testing,views} bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
