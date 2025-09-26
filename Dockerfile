@@ -49,6 +49,8 @@ CMD ["sh", "-c", "\
     chown -R www-data:www-data storage bootstrap/cache && chmod -R 775 storage bootstrap/cache && \
     # Ensure symlink exists
     php artisan storage:link && \
+    # Copy seed images into volume if not already present
+    cp -rn /var/www/html/storage/app/public/* /var/www/html/storage/app/public/ && \
     echo '🎉 Laravel app ready!' && \
     # Start PHP server with public as document root
     php -S 0.0.0.0:8080 -t public \
