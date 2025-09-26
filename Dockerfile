@@ -1,10 +1,11 @@
 FROM php:8.2-cli
 
-# Install system dependencies
+# Install system dependencies + supervisor
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev \
     libonig-dev libxml2-dev libzip-dev \
     zip unzip git curl default-mysql-client \
+    supervisor \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd exif pdo_mysql bcmath mbstring xml zip opcache
 
@@ -13,13 +14,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/html
 
-# Copy project
 COPY . .
 
-# Ensure startup.sh is executable
+# Make startup.sh executable
 RUN chmod +x docker/startup.sh
 
-# Install dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 # Permissions
