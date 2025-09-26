@@ -8,10 +8,14 @@ bootstrap/cache/*
 # Node modules
 /node_modules
 
-# Laravel storage (except .gitignore placeholders)
+# Ignore everything in storage by default
 /storage/*
+
+# Except the public folder contents (all seed folders)
 !/storage/app/public
-!/storage/framework/cache
+!/storage/app/public/**/*
+
+# Keep ignoring dynamic/framework/logs
 !/storage/framework/cache/data
 !/storage/framework/sessions
 !/storage/framework/testing
