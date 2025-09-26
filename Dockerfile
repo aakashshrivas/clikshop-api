@@ -43,7 +43,7 @@ CMD ["sh", "-c", "\
     php artisan storage:link && \
     if [ -f /var/www/html/db.sql ]; then \
         echo '📥 Dropping and importing database...'; \
-        mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD -e 'DROP DATABASE IF EXISTS $MYSQLDATABASE; CREATE DATABASE $MYSQLDATABASE;'; \
+        mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD -e \"DROP DATABASE IF EXISTS $MYSQLDATABASE; CREATE DATABASE $MYSQLDATABASE;\"; \
         mysql --ssl=0 -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQLDATABASE < /var/www/html/db.sql; \
         echo '✅ Database import completed.'; \
     else \
