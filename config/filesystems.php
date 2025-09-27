@@ -57,6 +57,20 @@ return [
             'throw' => false,
         ],
 
+         'r2' => [
+            'driver' => 's3', // R2 is S3 compatible
+            'key' => env('R2_ACCESS_KEY_ID'),
+            'secret' => env('R2_SECRET_ACCESS_KEY'),
+            'region' => env('R2_REGION', 'auto'),
+            'bucket' => env('R2_BUCKET'),
+            'url' => env('R2_URL'),           // Used for generating public URLs
+            'endpoint' => env('R2_ENDPOINT'), // Used for API calls (upload/delete)
+            'use_path_style_endpoint' => env('R2_USE_PATH_STYLE_ENDPOINT', false),
+            // Add a security measure for R2. The S3 ACL property is not supported.
+            'visibility' => 'public', 
+            'throw' => false,
+        ],
+
         'media' => [
             'driver' => 'local',
             'root'   => public_path('media'),
